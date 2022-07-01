@@ -26,11 +26,11 @@ fn vue() {
     let (normal, min) = get_js(Lib::Vue).expect("Unable to get vue js");
     run_test("vue", normal, min);
 }
-#[test]
-fn vue_esm() {
-    let js = ::std::fs::read_to_string("node_modules/vue/dist/vue.esm.js").unwrap();
-    run_test("vue_module", js, String::new());
-}
+// #[test]
+// fn vue_esm() {
+//     let js = ::std::fs::read_to_string("node_modules/vue/dist/vue.esm.js").unwrap();
+//     run_test("vue_module", js, String::new());
+// }
 
 #[test]
 fn jquery() {

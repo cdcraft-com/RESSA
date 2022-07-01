@@ -328,6 +328,15 @@ impl<'a> Parser<'a, DefaultCommentHandler> {
         let context = Context::default();
         Self::_new(s, config, context, DefaultCommentHandler, text)
     }
+
+    pub fn new_in_func(text: &'a str) -> Res<Self> {
+        let s = Scanner::new(text);
+        let config = Config::default();
+        let mut context = Context::default();
+        context.in_function_body = true;
+        Self::_new(s, config, context, DefaultCommentHandler, text)
+    }
+
 }
 
 impl<'a> Parser<'a, ()> {

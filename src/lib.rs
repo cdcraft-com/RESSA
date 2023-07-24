@@ -1518,14 +1518,14 @@ where
                 if self.at_punct(Punct::SemiColon) {
                     let ident = self.get_string(&kind.span)?;
                     // let ident
-                    let ident = resast::Ident::from(ident);
+                    let ident = resast::Ident::from_with_pos(ident, kind.location.start.line as u32, kind.location.start.column as u32);
                     let ident = Expr::Ident(ident);
                     let loop_init = LoopInit::Expr(ident);
                     let for_stmt = self.parse_for_loop_cont(Some(loop_init))?;
                     return Ok(Stmt::For(for_stmt));
                 } else if self.at_assign() {
                     let left = self.get_string(&kind.span)?;
-                    let left = resast::Ident::from(left);
+                    let left = resast::Ident::from_with_pos(left, kind.location.start.line as u32, kind.location.start.column as u32);
                     let left = Expr::Ident(left);
                     let assign = self.parse_assignment_after_start(left)?;
                     if self.at_punct(Punct::SemiColon) {
@@ -2542,7 +2542,7 @@ where
             }
             let s = self.get_string(&self.look_ahead.span)?;
             let _ = self.next_item()?;
-            Some(resast::Ident::from(s))
+            Some(resast::Ident::from_with_pos(s, self.look_ahead.location.start.line as u32, self.look_ahead.location.start.column as u32))
         } else if opt_ident && !self.look_ahead.token.is_ident() {
             None
         } else {

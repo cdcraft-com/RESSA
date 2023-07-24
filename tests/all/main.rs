@@ -11,6 +11,8 @@ mod ecma262;
 mod es_tokens;
 mod major_libs;
 mod snippets;
+
+mod base;
 #[cfg(feature = "moz_central")]
 mod spider_monkey;
 

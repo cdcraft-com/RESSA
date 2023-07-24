@@ -60,6 +60,7 @@ extern crate ress;
 extern crate log;
 extern crate backtrace;
 
+use resast::SourcePos;
 use ress::prelude::*;
 pub use ress::Span;
 
@@ -3103,7 +3104,7 @@ where
             }
         {
             let id = self.get_string(&item.span)?;
-            Ok(PropKey::Expr(Expr::ident_from(id)))
+            Ok(PropKey::Expr(Expr::ident_from_with_pos(id, item.location.start.line as u32, item.location.start.column as u32)))
         } else if item.token.matches_punct(Punct::OpenBracket) {
             let (prev_bind, prev_assign, prev_first) = self.isolate_cover_grammar();
             let key = self.parse_assignment_expr()?;
@@ -3198,7 +3199,7 @@ where
                 self.parse_function_expr()
             } else {
                 let ident = self.next_item()?;
-                Ok(Expr::ident_from(self.get_string(&ident.span)?))
+                Ok(Expr::ident_from_with_pos(self.get_string(&ident.span)?, ident.location.start.line as u32, ident.location.start.column as u32))
             }
         } else if self.look_ahead.token.is_number() || self.look_ahead.token.is_string() {
             self.context.is_assignment_target = false;
@@ -3962,7 +3963,7 @@ where
                     return self.unexpected_token_error(&ident, "reserved word as ident");
                 } else {
                     let s = self.get_string(&ident.span)?;
-                    resast::Ident::from(s)
+                    resast::Ident::from_with_pos(s, ident.location.start.line as u32, ident.location.start.column as u32)
                 }
             }
             _ => self.expected_token_error(&ident, &["variable identifier"])?,

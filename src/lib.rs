@@ -1517,6 +1517,7 @@ where
             if kind.token.matches_keyword(Keyword::Let(())) {
                 if self.at_punct(Punct::SemiColon) {
                     let ident = self.get_string(&kind.span)?;
+                    // let ident
                     let ident = resast::Ident::from(ident);
                     let ident = Expr::Ident(ident);
                     let loop_init = LoopInit::Expr(ident);
@@ -3559,7 +3560,7 @@ where
                 self.parse_object_property_key()?
             } else {
                 let s = self.get_string(&ident.span)?;
-                PropKey::Expr(Expr::Ident(resast::Ident::from(s)))
+                PropKey::Expr(Expr::Ident(resast::Ident::from_with_pos(s, ident.location.start.line as u32, ident.location.start.column as u32)))
             };
             (Some(key), is_async, computed)
         } else if self.at_punct(Punct::Asterisk) {
@@ -3660,8 +3661,10 @@ where
                     let inner = self.parse_assignment_expr()?;
                     let value = if let Token::Ident(_) = &start.token {
                         let p = AssignPat {
-                            left: Box::new(Pat::Ident(resast::Ident::from(
+                            left: Box::new(Pat::Ident(resast::Ident::from_with_pos(
                                 self.get_string(&start.span)?,
+                                start.location.start.line as u32,
+                                start.location.start.column as u32
                             ))),
                             right: Box::new(inner),
                         };
@@ -3907,7 +3910,7 @@ where
         }
         let ret = self.get_string(&ident.span)?;
 
-        Ok(resast::Ident::from(ret))
+        Ok(resast::Ident::from_with_pos(ret, ident.location.start.line as u32, ident.location.start.column as u32))
     }
 
     fn parse_var_ident(&mut self, is_var: bool) -> Res<resast::Ident<'b>> {
@@ -3949,7 +3952,7 @@ where
         let i = match ident.token {
             Token::Ident(_) => {
                 let s = self.get_string(&ident.span)?;
-                resast::Ident::from(s)
+                resast::Ident::from_with_pos(s, ident.location.start.line as u32, ident.location.start.column as u32)
             }
             Token::Keyword(ref k) => {
                 if k.is_reserved()
